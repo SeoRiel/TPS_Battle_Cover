@@ -4,151 +4,175 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-    private CharacterController playerController;
-    private Transform playerTransform;
-    private Animator playerAnimator;
-
-    private Vector3 direction = Vector3.zero;
-
-    private float directionSpeed = 1.0f;
-
+    [Header("Input is character move speed")]
     [SerializeField] private float walkSpeed = 1.0f;
     [SerializeField] private float dashSpeed = 5.0f;
-    [SerializeField] private float rotateSpeed = 1.0f;
 
-    private float axis = 0.0f;
-    private float rotateX;
-    private float rotateY;
+    [Header("Input is character rotate speed")]
+    [SerializeField] private float mouseRotate = 1.0f;
+    [SerializeField] private float keyboardRotate = 1.0f;
 
-    private bool moving = false;
+    private CharacterController playerController;
+    private Animator playerAnimator;
+
+    private Vector3 direction;
+
+    private float mouseX;
+    private float mouseY;
+
+    private float speed;
+    private float inputState;
+
+    // Setting player position & rotation
+    private float y;
+
+    private bool moveState;
 
     private void Awake()
     {
         playerController = GetComponent<CharacterController>();
-        playerTransform = GetComponent<Transform>();
         playerAnimator = GetComponent<Animator>();
+
+        direction = Vector3.zero;
+        inputState = 0.0f;
+        speed = walkSpeed;
+        moveState = false;
     }
 
     private void Update()
     {
-        directionSpeed = walkSpeed;
         GetMousePosition();
+        // Debug.Log("Mouse X : " + mouseX);
 
-        if(playerController.isGrounded)
+        if (Input.GetKey(KeyCode.W))
         {
-            if (Input.GetKey(KeyCode.W))
+            // y = 0.0f;
+            PlayerRotate(0.0f);
+
+            KeyInput(true);
+            DashCheck();
+
+            direction = Vector3.forward;
+
+            if (Input.GetKey(KeyCode.A))
             {
-                DashCheck();
-                PlayerRotate(0.0f, 0.0f, 0.0f);
-
+                // y = -45.0f;
+                PlayerRotate(-45.0f);
                 direction = Vector3.forward;
-
-                if (Input.GetKey(KeyCode.D))
-                {
-                    PlayerRotate(0.0f, 90.0f, 0.0f);
-                }
-                else if (Input.GetKey(KeyCode.A))
-                {
-                    PlayerRotate(0.0f, -90.0f, 0.0f);
-                }
-
-                DefineMovingAxis(1.0f, true);
-            }
-            else if (Input.GetKey(KeyCode.A))
-            {
-                DashCheck();
-                PlayerRotate(0.0f, -90.0f, 0.0f);
-
-                direction = Vector3.forward;
-
-                if (Input.GetKey(KeyCode.W))
-                {
-                    PlayerRotate(0.0f, 90.0f, 0.0f);
-                }
-                else if (Input.GetKey(KeyCode.S))
-                {
-                    PlayerRotate(0.0f, -90.0f, 0.0f);
-                }
-
-                DefineMovingAxis(1.0f, true);
-                playerAnimator.SetBool("WalkFront", true);
-            }
-            else if (Input.GetKey(KeyCode.S))
-            {
-                DashCheck();
-                PlayerRotate(0.0f, 180.0f, 0.0f);
-
-                direction = Vector3.forward;
-
-                if (Input.GetKey(KeyCode.D))
-                {
-                    PlayerRotate(0.0f, 90.0f, 0.0f);
-                }
-                else if (Input.GetKey(KeyCode.A))
-                {
-                    PlayerRotate(0.0f, -90.0f, 0.0f);
-                }
-
-                DefineMovingAxis(1.0f, true);
             }
             else if (Input.GetKey(KeyCode.D))
             {
-                DashCheck();
-
-                PlayerRotate(0.0f, 90.0f, 0.0f);
+                // y = 45.0f;
+                PlayerRotate(45.0f);
                 direction = Vector3.forward;
-
-                if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
-                {
-                    PlayerRotate(0.0f, 90.0f, 0.0f);
-                }
-
-                DefineMovingAxis(1.0f, true);
-                playerAnimator.SetBool("WalkFront", true);
-            }
-            else
-            {
-                DefineMovingAxis(1.0f, true);
-
-                playerAnimator.SetBool("WalkFront", false);
-                playerAnimator.SetBool("Dash", false);
             }
 
-            playerController.Move(direction * axis * directionSpeed * Time.deltaTime);
+            playerAnimator.SetBool("WalkFront", true);
         }
-    }
-
-    private void LateUpdate()
-    {
-        
-    }
-
-    // Function
-    private void GetMousePosition()
-    {
-        rotateX = Input.GetAxis("Mouse X");
-        rotateY = Input.GetAxis("Mouse Y");
-    }
-
-    private void PlayerRotate(float x, float y , float z)
-    {
-        if(moving)
+        else if (Input.GetKey(KeyCode.A))
         {
-            playerTransform.Rotate(Vector3.up, rotateY * directionSpeed);
+            // y = -90.0f;
+            PlayerRotate(-90.0f);
+
+            KeyInput(true);
+            DashCheck();
+
+            direction = Vector3.forward;
+
+            if (Input.GetKey(KeyCode.W))
+            {
+                // y = -45.0f;
+                PlayerRotate(-45.0f);
+                direction = Vector3.forward;
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                // y = -135.0f;
+                PlayerRotate(-135.0f);
+                direction = Vector3.forward;
+            }
+
+            playerAnimator.SetBool("WalkFront", true);
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            // y = 180.0f;
+            PlayerRotate(180.0f);
+
+            KeyInput(true);
+            DashCheck();
+
+            direction = Vector3.forward;
+
+            if (Input.GetKey(KeyCode.D))
+            {
+                // y = 135.0f;
+                PlayerRotate(135.0f);
+                direction = Vector3.forward;
+            }
+            else if (Input.GetKey(KeyCode.A))
+            {
+                // y = 225.0f;
+                PlayerRotate(225.0f);
+                direction = Vector3.forward;
+            }
+
+            playerAnimator.SetBool("WalkFront", true);
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            // y = 90.0f;
+            PlayerRotate(90.0f);
+
+            KeyInput(true);
+            DashCheck();
+
+            direction = Vector3.forward;
+
+            if (Input.GetKey(KeyCode.W))
+            {
+                // y = 45.0f;
+                PlayerRotate(45.0f);
+                direction = Vector3.forward;
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                // y = 180.0f;
+                PlayerRotate(180.0f);
+                direction = Vector3.forward;
+            }
+
+            playerAnimator.SetBool("WalkFront", true);
         }
         else
         {
-            playerTransform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.Euler(x, y, z), Time.deltaTime * rotateSpeed);
+            KeyInput(false);
+            playerAnimator.SetBool("WalkFront", false);
+            playerAnimator.SetBool("Dash", false);
         }
+
+        // if (playerController.isGrounded)
+        PlayerRotate(this.transform.rotation.y);
+
+        // direction에 Vector3를 할당해서 넣지말고 즉각 적용하는 방식으로 변경
+        playerController.Move(this.transform.TransformDirection(direction.normalized) * speed * Time.deltaTime * inputState);
     }
 
+    // 마우스 값 저장
+    private void GetMousePosition()
+    {
+        mouseX = Input.GetAxis("Mouse X");
+        mouseY = Input.GetAxis("Mouse Y");
+    }
+
+    // 애니메이션 변경
     private void DashCheck()
     {
-        if(Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift))
         {
             playerAnimator.SetBool("Dash", true);
 
-            directionSpeed = dashSpeed;
+            speed = dashSpeed;
 
             playerAnimator.SetBool("WalkFront", false);
         }
@@ -156,33 +180,81 @@ public class PlayerMove : MonoBehaviour
         {
             playerAnimator.SetBool("WalkFront", true);
 
-            directionSpeed = walkSpeed;
+            speed = walkSpeed;
 
             playerAnimator.SetBool("Dash", false);
         }
     }
 
-    private bool DefineMovingAxis(float defineAxis, bool moveCheck)
+    //
+    private void InputRotate(float inputY, bool keyState)
     {
-        axis = defineAxis;
-        moving = moveCheck;
+        moveState = keyState;
 
-        return true;
+        if(moveState)
+        {
+            inputState = 1.0f;
+            playerController.transform.Rotate(Vector3.up, mouseX * mouseRotate);
+        }
+        else
+        {
+            inputState = 0.0f;
+            playerController.transform.rotation = Quaternion.Slerp(playerController.transform.rotation, Quaternion.Euler(0.0f, inputY, 0.0f), Time.deltaTime * keyboardRotate);
+        }
+    }
+
+    private void PlayerMovement(Vector3 way)
+    {
+        // 마우스 미사용
+
+
+        // 마우스 사용
+
+        playerController.Move(this.transform.TransformDirection(way.normalized) * speed * Time.deltaTime * inputState);
+    }
+
+
+    // KeyInput과 PlayerRotate 함수 통일
+    private void KeyInput(bool keyState)
+    {
+        moveState = keyState;
+
+        if(moveState)
+        {
+            inputState = 1.0f;
+        }
+        else
+        {
+            inputState = 0.0f;
+        }
+    }
+
+    // 키 입력 및 마우스 입력을 통한 회전
+    private void PlayerRotate(float inputY)
+    {
+        if (moveState)
+        {
+            playerController.transform.Rotate(Vector3.up, mouseX * mouseRotate);
+        }
+        else
+        {
+            playerController.transform.rotation = Quaternion.Slerp(playerController.transform.rotation, Quaternion.Euler(0.0f, inputY, 0.0f), Time.deltaTime * keyboardRotate);
+        }
     }
 
     // getter
     public bool GetMoveState()
     {
-        return moving;
+        return moveState;
     }
 
     public float GetMousePositionX()
     {
-        return rotateX;
+        return mouseX;
     }
 
     public float GetMousePositionY()
     {
-        return rotateY;
+        return mouseY;
     }
 }

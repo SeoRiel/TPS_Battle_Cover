@@ -13,7 +13,6 @@ public class CharacterMove : MonoBehaviour
     
     private float rotateX;
     private float rotateY;
-    private bool moveCheck;
 
     private Vector3 direction;
 
@@ -26,7 +25,6 @@ public class CharacterMove : MonoBehaviour
         characterAnimator = GetComponent<Animator>();
 
         moveSpeed = originSpeed;
-        moveCheck = false;
     }
 
     private void Update()
@@ -52,7 +50,6 @@ public class CharacterMove : MonoBehaviour
             }
 
             moveAxis = 1.0f;
-            moveCheck = true;
         }
         else if (Input.GetKey(KeyCode.A))
         {
@@ -71,7 +68,6 @@ public class CharacterMove : MonoBehaviour
             }
 
             moveAxis = 1.0f;
-            moveCheck = true;
 
             characterAnimator.SetBool("WalkFront", true);
         }
@@ -92,7 +88,6 @@ public class CharacterMove : MonoBehaviour
             }
 
             moveAxis = 1.0f;
-            moveCheck = true;
         }
         else if (Input.GetKey(KeyCode.D))
         {
@@ -107,14 +102,12 @@ public class CharacterMove : MonoBehaviour
             }
 
             moveAxis = 1.0f;
-            moveCheck = true;
 
             characterAnimator.SetBool("WalkFront", true);
         }
         else
         {
             moveAxis = 0.0f;
-            moveCheck = false;
 
             characterAnimator.SetBool("WalkFront", false);
             characterAnimator.SetBool("Dash", false);
@@ -123,20 +116,20 @@ public class CharacterMove : MonoBehaviour
         characterTransform.Translate(direction.normalized * moveAxis * moveSpeed * Time.deltaTime, Space.Self);
     }
 
-    private void OnCollisionExit(Collision medium)
-    {
-        PlayerRotate(this.transform.rotation.x, 0.0f, 0.0f);
-    }
+    //private void OnCollisionExit(Collision medium)
+    //{
+    //    PlayerRotate(this.transform.rotation.x, 0.0f, 0.0f);
+    //}
 
     private void PlayerRotate(float x, float y, float z)
     {
-        if (moveCheck)
+        if (moveAxis >= 1.0f)
         {
             characterTransform.Rotate(Vector3.up, rotateX * rotateSpeed);
         }
         else
         {
-            characterTransform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.Euler(x, y, z), Time.deltaTime * rotateSpeed);
+            characterTransform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(x, y, z), Time.deltaTime * rotateSpeed);
         }
     }
 

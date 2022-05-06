@@ -6,9 +6,6 @@ public class FollowCamera : MonoBehaviour
 {
     [SerializeField] private Transform target;
 
-    [Header("Setting for camera rotation speed")]
-    [SerializeField] private float camSpeed = 1.0f;
-
     [Header("Camera distance & offset ")]
     [SerializeField] private float moveDamping = 15.0f;
     [SerializeField] private float rotateDamping = 10.0f;
@@ -27,6 +24,8 @@ public class FollowCamera : MonoBehaviour
 
     private Transform camTransform;
 
+    private Vector3 forward;
+
     private void Awake()
     {
         camTransform = GetComponent<Transform>();
@@ -39,7 +38,9 @@ public class FollowCamera : MonoBehaviour
         RaycastHit rayCastHit;
 
         Vector3 castTarget = target.position + (target.up * rayCastOffset);
-        Vector3 castDirection = (castTarget - transform.position).normalized;
+        Vector3 castDirection = (castTarget - this.transform.position).normalized;
+
+        forward = this.transform.TransformDirection(Vector3.forward) * 10;
 
         if (Physics.CheckSphere(transform.position, radius))
         {
@@ -64,8 +65,8 @@ public class FollowCamera : MonoBehaviour
     {
         Vector3 cameraPosition = target.position - (target.forward * distance) + (target.up * height);
 
-        camTransform.position = Vector3.Slerp(transform.position, cameraPosition, Time.deltaTime * moveDamping);
-        camTransform.rotation = Quaternion.Slerp(transform.rotation, target.rotation, Time.deltaTime * rotateDamping);
+        camTransform.position = Vector3.Slerp(this.transform.position, cameraPosition, Time.deltaTime * moveDamping);
+        camTransform.rotation = Quaternion.Slerp(this.transform.rotation, target.rotation, Time.deltaTime * rotateDamping);
 
         camTransform.LookAt(target.position + (target.up * offset));
     }
@@ -75,12 +76,15 @@ public class FollowCamera : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(target.position + (target.up * offset), 0.1f);
 
-        Gizmos.DrawLine(target.position + (target.up * offset), transform.position);
+        Gizmos.DrawLine(target.position + (target.up * offset), this.transform.position);
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, radius);
+        Gizmos.DrawWireSphere(this.transform.position, radius);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(target.position + (target.up * offset), this.transform.position);
 
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(target.position + (target.up * offset), transform.position);
+        // Gizmos.DrawRay(this.transform.position, forward, Color.red);
     }
 }
