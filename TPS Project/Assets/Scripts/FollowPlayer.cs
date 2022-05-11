@@ -18,8 +18,12 @@ public class FollowPlayer : MonoBehaviour
     [Header("Reference to PlayerMove Script")]
     [SerializeField] private GameObject player;
 
-    [Header("Input Aim distance")]
+    [Header("Input Aim Setting")]
     [SerializeField] private float aimDistance = 1.0f;
+    [SerializeField] private float baseFOV = 60.0f;
+    [SerializeField] private float aimFOV = 1.0f;
+
+    [SerializeField] private Camera cam;
 
     private Transform playerPosition;
 
@@ -49,6 +53,7 @@ public class FollowPlayer : MonoBehaviour
         else
         {
             // Debug.Log("Take off right button");
+            usingAim = false;
         }
     }
 
@@ -56,17 +61,18 @@ public class FollowPlayer : MonoBehaviour
     {
         this.transform.position += new Vector3(x, y, z);
         this.transform.position = Vector3.Lerp(this.transform.position, target.position, movingDamp);
-        
-        //if (usingAim)
-        //{
-        //    this.transform.position = Vector3.Lerp(this.transform.position, new Vector3(0.0f, 0.0f, aimDistance), Time.deltaTime);
-        //    // this.transform.position = Vector3.Lerp(player.transform.position, new Vector3(0.0f, 0.0f, aimDistance), Time.deltaTime);
-        //}
-        //else
-        //{
-        //    this.transform.position = Vector3.Lerp(this.transform.position, target.position, movingDamp);
-        //    // this.transform.position = Vector3.Lerp(player.transform.position, target.position, movingDamp);
-        //}
+
+        if (usingAim)
+        {
+            // Debug.Log("Cross hair activate");
+            this.transform.position += new Vector3(aimDistance, 0.0f, 0.0f);
+            cam.fieldOfView = aimFOV;
+        }
+        else
+        {
+            cam.fieldOfView = baseFOV;
+        }
+
 
         if (this.transform.rotation.x <= 90.0f)
         {

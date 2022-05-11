@@ -9,7 +9,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float dashSpeed = 5.0f;
 
     [Header("Input is character rotate speed")]
-    [SerializeField] private float mouseRotate = 1.0f;
+    [SerializeField] private float mouseSpeed = 1.0f;
     [SerializeField] private float keyboardRotate = 1.0f;
 
     private CharacterController playerController;
@@ -42,28 +42,29 @@ public class PlayerMove : MonoBehaviour
     private void Update()
     {
         GetMousePosition();
-        // Debug.Log("Mouse X : " + mouseX);
+        Debug.Log("Mouse X : " + mouseX);
 
         if (Input.GetKey(KeyCode.W))
         {
-            // y = 0.0f;
+            KeyboardInput(true);
             PlayerRotate(0.0f);
 
-            KeyInput(true);
             DashCheck();
 
             direction = Vector3.forward;
 
             if (Input.GetKey(KeyCode.A))
             {
-                // y = -45.0f;
+                KeyboardInput(true);
                 PlayerRotate(-45.0f);
+
                 direction = Vector3.forward;
             }
             else if (Input.GetKey(KeyCode.D))
             {
-                // y = 45.0f;
+                KeyboardInput(true);
                 PlayerRotate(45.0f);
+
                 direction = Vector3.forward;
             }
 
@@ -71,24 +72,25 @@ public class PlayerMove : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            // y = -90.0f;
+            KeyboardInput(true);
             PlayerRotate(-90.0f);
 
-            KeyInput(true);
             DashCheck();
 
             direction = Vector3.forward;
 
             if (Input.GetKey(KeyCode.W))
             {
-                // y = -45.0f;
+                KeyboardInput(true);
                 PlayerRotate(-45.0f);
+
                 direction = Vector3.forward;
             }
             else if (Input.GetKey(KeyCode.S))
             {
-                // y = -135.0f;
+                KeyboardInput(true);
                 PlayerRotate(-135.0f);
+
                 direction = Vector3.forward;
             }
 
@@ -96,24 +98,27 @@ public class PlayerMove : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            // y = 180.0f;
+            KeyboardInput(true);
             PlayerRotate(180.0f);
 
-            KeyInput(true);
             DashCheck();
 
             direction = Vector3.forward;
 
             if (Input.GetKey(KeyCode.D))
             {
-                // y = 135.0f;
-                PlayerRotate(135.0f);
+                KeyboardInput(true);
+                // PlayerRotate(135.0f);
+                PlayerRotate(-45.0f);
+
                 direction = Vector3.forward;
             }
             else if (Input.GetKey(KeyCode.A))
             {
-                // y = 225.0f;
-                PlayerRotate(225.0f);
+                KeyboardInput(true);
+                // PlayerRotate(225.0f);
+                PlayerRotate(45.0f);
+
                 direction = Vector3.forward;
             }
 
@@ -121,24 +126,25 @@ public class PlayerMove : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            // y = 90.0f;
+            KeyboardInput(true);
             PlayerRotate(90.0f);
 
-            KeyInput(true);
             DashCheck();
 
             direction = Vector3.forward;
 
             if (Input.GetKey(KeyCode.W))
             {
-                // y = 45.0f;
-                PlayerRotate(45.0f);
+                KeyboardInput(true);
+                PlayerRotate(-45.0f);
+
                 direction = Vector3.forward;
             }
             else if (Input.GetKey(KeyCode.S))
             {
-                // y = 180.0f;
-                PlayerRotate(180.0f);
+                KeyboardInput(true);
+                PlayerRotate(90.0f);
+
                 direction = Vector3.forward;
             }
 
@@ -146,13 +152,14 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            KeyInput(false);
+            KeyboardInput(false);
+            // PlayerRotate(this.transform.rotation.y);
+
             playerAnimator.SetBool("WalkFront", false);
             playerAnimator.SetBool("Dash", false);
         }
 
         // if (playerController.isGrounded)
-        PlayerRotate(this.transform.rotation.y);
 
         // direction에 Vector3를 할당해서 넣지말고 즉각 적용하는 방식으로 변경
         playerController.Move(this.transform.TransformDirection(direction.normalized) * speed * Time.deltaTime * inputState);
@@ -186,38 +193,10 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    //
-    private void InputRotate(float inputY, bool keyState)
+    // 
+    private void KeyboardInput(bool isKeyInput)
     {
-        moveState = keyState;
-
-        if(moveState)
-        {
-            inputState = 1.0f;
-            playerController.transform.Rotate(Vector3.up, mouseX * mouseRotate);
-        }
-        else
-        {
-            inputState = 0.0f;
-            playerController.transform.rotation = Quaternion.Slerp(playerController.transform.rotation, Quaternion.Euler(0.0f, inputY, 0.0f), Time.deltaTime * keyboardRotate);
-        }
-    }
-
-    private void PlayerMovement(Vector3 way)
-    {
-        // 마우스 미사용
-
-
-        // 마우스 사용
-
-        playerController.Move(this.transform.TransformDirection(way.normalized) * speed * Time.deltaTime * inputState);
-    }
-
-
-    // KeyInput과 PlayerRotate 함수 통일
-    private void KeyInput(bool keyState)
-    {
-        moveState = keyState;
+        moveState = isKeyInput;
 
         if(moveState)
         {
@@ -230,16 +209,47 @@ public class PlayerMove : MonoBehaviour
     }
 
     // 키 입력 및 마우스 입력을 통한 회전
+    // 너무 시간 끄니까 나중에 수정...;;
     private void PlayerRotate(float inputY)
     {
-        if (moveState)
+        Quaternion keyRotation = Quaternion.Euler(0.0f, inputY, 0.0f);
+
+        // 기존 로직
+        //if (inputState >= 0.0f)
+        if (mouseX == 0)
         {
-            playerController.transform.Rotate(Vector3.up, mouseX * mouseRotate);
+            playerController.transform.rotation = Quaternion.Slerp(this.transform.rotation, keyRotation, Time.deltaTime * keyboardRotate);
         }
         else
         {
-            playerController.transform.rotation = Quaternion.Slerp(playerController.transform.rotation, Quaternion.Euler(0.0f, inputY, 0.0f), Time.deltaTime * keyboardRotate);
+            playerController.transform.Rotate(Vector3.up, mouseX * mouseSpeed);
         }
+
+        // 변경 로직 - 1 -
+        //if (mouseX == 0.0f)
+        //{
+        //    if(playerController.transform.rotation.y != inputY)
+        //    {
+        //        // playerController.transform.Rotate(0.0f, inputY, 0.0f);
+        //        // playerController.transform.rotation = Quaternion.Slerp(this.transform.rotation, keyRotation, keyboardRotate * Time.deltaTime);
+
+        //        // keyRotation = Quaternion.Euler(0.0f, inputY, 0.0f);
+        //    }
+
+        //}
+        //else
+        //{
+        //    keyRotation = Quaternion.Euler(0.0f, inputY + (mouseX * mouseSpeed), 0.0f);
+        //    // playerController.transform.Rotate(Vector3.up, mouseX * mouseSpeed);
+        //}
+
+        // 변경 로직 - 2 -
+        //if (mouseX != 0)
+        //{
+        //    keyRotation.y += (mouseX * mouseSpeed);
+        //}
+
+        //playerController.transform.rotation = Quaternion.Slerp(this.transform.rotation, keyRotation, keyboardRotate * Time.deltaTime);
     }
 
     // getter
