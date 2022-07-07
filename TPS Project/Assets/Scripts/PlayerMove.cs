@@ -24,7 +24,7 @@ public class PlayerMove : MonoBehaviour
     private float inputState;
 
     // Setting player position & rotation
-    private float y;
+    // private float y;
 
     private bool moveState;
 
@@ -42,14 +42,13 @@ public class PlayerMove : MonoBehaviour
     private void Update()
     {
         GetMousePosition();
-        Debug.Log("Mouse X : " + mouseX);
 
         if (Input.GetKey(KeyCode.W))
         {
             KeyboardInput(true);
             PlayerRotate(0.0f);
 
-            DashCheck();
+            DashMove();
 
             direction = Vector3.forward;
 
@@ -75,7 +74,7 @@ public class PlayerMove : MonoBehaviour
             KeyboardInput(true);
             PlayerRotate(-90.0f);
 
-            DashCheck();
+            DashMove();
 
             direction = Vector3.forward;
 
@@ -101,22 +100,20 @@ public class PlayerMove : MonoBehaviour
             KeyboardInput(true);
             PlayerRotate(180.0f);
 
-            DashCheck();
+            DashMove();
 
             direction = Vector3.forward;
 
             if (Input.GetKey(KeyCode.D))
             {
                 KeyboardInput(true);
-                // PlayerRotate(135.0f);
-                PlayerRotate(-45.0f);
+                PlayerRotate(135.0f);
 
                 direction = Vector3.forward;
             }
             else if (Input.GetKey(KeyCode.A))
             {
                 KeyboardInput(true);
-                // PlayerRotate(225.0f);
                 PlayerRotate(45.0f);
 
                 direction = Vector3.forward;
@@ -129,7 +126,7 @@ public class PlayerMove : MonoBehaviour
             KeyboardInput(true);
             PlayerRotate(90.0f);
 
-            DashCheck();
+            DashMove();
 
             direction = Vector3.forward;
 
@@ -153,19 +150,15 @@ public class PlayerMove : MonoBehaviour
         else
         {
             KeyboardInput(false);
-            // PlayerRotate(this.transform.rotation.y);
 
             playerAnimator.SetBool("WalkFront", false);
             playerAnimator.SetBool("Dash", false);
         }
 
-        // if (playerController.isGrounded)
-
-        // direction에 Vector3를 할당해서 넣지말고 즉각 적용하는 방식으로 변경
         playerController.Move(this.transform.TransformDirection(direction.normalized) * speed * Time.deltaTime * inputState);
     }
 
-    // 마우스 값 저장
+    // -
     private void GetMousePosition()
     {
         mouseX = Input.GetAxis("Mouse X");
@@ -173,7 +166,7 @@ public class PlayerMove : MonoBehaviour
     }
 
     // 애니메이션 변경
-    private void DashCheck()
+    private void DashMove()
     {
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -181,7 +174,7 @@ public class PlayerMove : MonoBehaviour
 
             speed = dashSpeed;
 
-            playerAnimator.SetBool("WalkFront", false);
+            playerAnimator.SetBool("WalkFront", false);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
         }
         else
         {
@@ -193,8 +186,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    // 
-    private void KeyboardInput(bool isKeyInput)
+    private bool KeyboardInput(bool isKeyInput)
     {
         moveState = isKeyInput;
 
@@ -206,50 +198,32 @@ public class PlayerMove : MonoBehaviour
         {
             inputState = 0.0f;
         }
+
+        return moveState;
     }
 
-    // 키 입력 및 마우스 입력을 통한 회전
-    // 너무 시간 끄니까 나중에 수정...;;
     private void PlayerRotate(float inputY)
     {
-        Quaternion keyRotation = Quaternion.Euler(0.0f, inputY, 0.0f);
+        // https://wergia.tistory.com/230
 
-        // 기존 로직
-        //if (inputState >= 0.0f)
-        if (mouseX == 0)
+        // 키보드 회전
+        Quaternion keyRotation = Quaternion.Euler(0.0f, this.transform.rotation.y + inputY, 0.0f);
+        // playerController.transform.rotation = Quaternion.Slerp(playerController.transform.rotation, keyRotation, keyboardRotate * Time.deltaTime);
+        // playerController.transform.Rotate(Vector3.up, mouseSpeed * mouseX);
+        
+        if (Input.anyKey)
         {
-            playerController.transform.rotation = Quaternion.Slerp(this.transform.rotation, keyRotation, Time.deltaTime * keyboardRotate);
+            if(mouseX == 0)
+            {
+                playerController.transform.Rotate(new Vector3(0.0f, inputY, 0.0f) * keyboardRotate * Time.deltaTime, Space.Self);
+                // playerController.transform.rotation = Quaternion.Slerp(playerController.transform.rotation, keyRotation, keyboardRotate * Time.deltaTime);
+            }
+            else
+            {
+                // 마우스 회전
+                playerController.transform.Rotate(Vector3.up, mouseSpeed * mouseX);
+            }
         }
-        else
-        {
-            playerController.transform.Rotate(Vector3.up, mouseX * mouseSpeed);
-        }
-
-        // 변경 로직 - 1 -
-        //if (mouseX == 0.0f)
-        //{
-        //    if(playerController.transform.rotation.y != inputY)
-        //    {
-        //        // playerController.transform.Rotate(0.0f, inputY, 0.0f);
-        //        // playerController.transform.rotation = Quaternion.Slerp(this.transform.rotation, keyRotation, keyboardRotate * Time.deltaTime);
-
-        //        // keyRotation = Quaternion.Euler(0.0f, inputY, 0.0f);
-        //    }
-
-        //}
-        //else
-        //{
-        //    keyRotation = Quaternion.Euler(0.0f, inputY + (mouseX * mouseSpeed), 0.0f);
-        //    // playerController.transform.Rotate(Vector3.up, mouseX * mouseSpeed);
-        //}
-
-        // 변경 로직 - 2 -
-        //if (mouseX != 0)
-        //{
-        //    keyRotation.y += (mouseX * mouseSpeed);
-        //}
-
-        //playerController.transform.rotation = Quaternion.Slerp(this.transform.rotation, keyRotation, keyboardRotate * Time.deltaTime);
     }
 
     // getter

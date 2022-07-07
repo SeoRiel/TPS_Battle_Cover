@@ -47,12 +47,10 @@ public class FollowPlayer : MonoBehaviour
 
         if (Input.GetMouseButton(1))
         {
-            // Debug.Log("Press right button");
             usingAim = true;
         }
         else
         {
-            // Debug.Log("Take off right button");
             usingAim = false;
         }
     }
@@ -64,7 +62,6 @@ public class FollowPlayer : MonoBehaviour
 
         if (usingAim)
         {
-            // Debug.Log("Cross hair activate");
             this.transform.position += new Vector3(aimDistance, 0.0f, 0.0f);
             cam.fieldOfView = aimFOV;
         }
@@ -73,7 +70,7 @@ public class FollowPlayer : MonoBehaviour
             cam.fieldOfView = baseFOV;
         }
 
-
+        // https://rito15.github.io/posts/unity-memo-rotation/
         if (this.transform.rotation.x <= 90.0f)
         {
             this.transform.Rotate(Vector3.up, mouseX * rotateSpeed);

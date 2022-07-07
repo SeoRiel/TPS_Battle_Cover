@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // 수정 완료 후 PlayerMove로 변경
-public class Temporarily_PlayerMove : MonoBehaviour
+public class Temporarily_PlayerMove_1 : MonoBehaviour
 {
     [Header("Input is character move speed")]
     [SerializeField] private float walkSpeed = 1.0f;
