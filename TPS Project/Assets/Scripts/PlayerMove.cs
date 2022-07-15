@@ -9,7 +9,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float dashSpeed = 5.0f;
 
     [Header("Input is character rotate speed")]
-    [SerializeField] private float mouseSpeed = 1.0f;
+    [SerializeField] private float mouseRotate = 1.0f;
     [SerializeField] private float keyboardRotate = 1.0f;
 
     private CharacterController playerController;
@@ -207,22 +207,28 @@ public class PlayerMove : MonoBehaviour
         // https://wergia.tistory.com/230
 
         // 키보드 회전
-        Quaternion keyRotation = Quaternion.Euler(0.0f, this.transform.rotation.y + inputY, 0.0f);
+        Quaternion keyRotation = Quaternion.Euler(0.0f, inputY, 0.0f);
         // playerController.transform.rotation = Quaternion.Slerp(playerController.transform.rotation, keyRotation, keyboardRotate * Time.deltaTime);
         // playerController.transform.Rotate(Vector3.up, mouseSpeed * mouseX);
         
-        if (Input.anyKey)
+        if (Input.anyKey)   
         {
-            if(mouseX == 0)
-            {
-                playerController.transform.Rotate(new Vector3(0.0f, inputY, 0.0f) * keyboardRotate * Time.deltaTime, Space.Self);
-                // playerController.transform.rotation = Quaternion.Slerp(playerController.transform.rotation, keyRotation, keyboardRotate * Time.deltaTime);
-            }
-            else
-            {
-                // 마우스 회전
-                playerController.transform.Rotate(Vector3.up, mouseSpeed * mouseX);
-            }
+            // 키보드 각도 + 마우스 회전 방향
+
+            playerController.transform.Rotate(Vector3.up, keyRotation.y + (mouseRotate * mouseX));
+            //if (mouseX == 0)
+            //{
+            //}
+            //else
+            //{
+            //    // 마우스 회전
+            //    playerController.transform.Rotate(Vector3.up, mouseSpeed * mouseX);
+            //}
+        }
+        else
+        {
+            playerController.transform.rotation = Quaternion.Slerp(playerController.transform.rotation, keyRotation, keyboardRotate * Time.deltaTime);
+            // playerController.transform.rotation
         }
     }
 

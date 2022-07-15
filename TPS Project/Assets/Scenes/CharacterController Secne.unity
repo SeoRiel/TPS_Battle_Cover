@@ -634,22 +634,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4176941757705761504, guid: ba9b25f94dafeec4cafedf8a3f1c057b, type: 3}
   m_PrefabInstance: {fileID: 1812079317}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &374498433
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 374498427}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1073c61597d3de47a9d4815c695e0a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkSpeed: 1
-  dashSpeed: 5
-  mouseRotate: 1
-  keyboardRotate: 1
 --- !u!1 &428048033
 GameObject:
   m_ObjectHideFlags: 0
@@ -889,7 +873,7 @@ MonoBehaviour:
   y: 0.14
   z: 0
   movingDamp: 0.1
-  rotateSpeed: 2
+  rotateSpeed: 5
   player: {fileID: 374498427}
   aimDistance: 0.05
   baseFOV: 60
@@ -1546,7 +1530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 1
   dashSpeed: 5
-  mouseSpeed: 1
+  mouseRotate: 1
   keyboardRotate: 15
 --- !u!1 &1241962470
 GameObject:
@@ -2378,6 +2362,10 @@ PrefabInstance:
     - target: {fileID: -4271866205964599780, guid: ba9b25f94dafeec4cafedf8a3f1c057b, type: 3}
       propertyPath: mouseSpeed
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -4271866205964599780, guid: ba9b25f94dafeec4cafedf8a3f1c057b, type: 3}
+      propertyPath: mouseRotate
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: -4271866205964599780, guid: ba9b25f94dafeec4cafedf8a3f1c057b, type: 3}
       propertyPath: keyboardRotate
